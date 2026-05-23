@@ -106,13 +106,14 @@ async function loadAndProcessData() {
         const urlStation4 = `${apiEndpoint}/api/tideDailyStats?source_id=4&from_date=${fromDate}&to_date=${toDate}`;
 
         const [res5, res4] = await Promise.all([
-		    fetch(urlStation5)
-		        .then(r => r.ok ? r.json() : [])
-		        .catch(err => { console.warn("⚠️ Lỗi trạm 5:", err); return []; }),
-		
-		    fetch(urlStation4)
-		        .then(r => r.ok ? r.json() : [])
-		        .catch(err => { console.warn("⚠️ Lỗi trạm 4:", err); return []; })
+		    fetch(urlStation5).then(r => {
+		        if (!r.ok) throw new Error(`Trạm 5 báo lỗi: ${r.status}`);
+		        return r.json();
+		    }),
+		    fetch(urlStation4).then(r => {
+		        if (!r.ok) throw new Error(`Trạm 4 báo lỗi: ${r.status}`);
+		        return r.json();
+		    })
 		]);
 
         if (!res5.success || !res4.success) {
