@@ -106,9 +106,14 @@ async function loadAndProcessData() {
         const urlStation4 = `${apiEndpoint}/api/tideDailyStats?source_id=4&from_date=${fromDate}&to_date=${toDate}`;
 
         const [res5, res4] = await Promise.all([
-            fetch(urlStation5).then(r => r.json()),
-            fetch(urlStation4).then(r => r.json())
-        ]);
+		    fetch(urlStation5)
+		        .then(r => r.ok ? r.json() : [])
+		        .catch(err => { console.warn("⚠️ Lỗi trạm 5:", err); return []; }),
+		
+		    fetch(urlStation4)
+		        .then(r => r.ok ? r.json() : [])
+		        .catch(err => { console.warn("⚠️ Lỗi trạm 4:", err); return []; })
+		]);
 
         if (!res5.success || !res4.success) {
             const errLog = (!res5.success ? res5.error : "") + " " + (!res4.success ? res4.error : "");
